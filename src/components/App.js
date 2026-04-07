@@ -1,40 +1,39 @@
-
 import React, { useState } from "react";
 import "./../styles/App.css";
 
-const API_KEY = "72f7078daf35eb86f17277f041b4f960"; 
+const API_KEY = "72f7078daf35eb86f17277f041b4f960";
 
 const App = () => {
   const [query, setQuery] = useState("");
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
 
-  const fetchWeather = async () => {
+  const fetchWeather = () => {
     if (!query.trim()) return;
 
-    try {
-      setError("");
+    setError("");
 
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}&units=metric`
-      );
-
-      if (!response.ok) {
-        throw new Error("City not found");
-      }
-
-      const data = await response.json();
-
-      setWeather({
-        city: data.name,
-        temp: data.main.temp,
-        description: data.weather[0].description,
-        icon: data.weather[0].icon,
+    fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}&units=metric`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("City not found");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setWeather({
+          city: data.name,
+          temp: data.main.temp,
+          description: data.weather[0].description,
+          icon: data.weather[0].icon,
+        });
+      })
+      .catch((err) => {
+        setWeather(null);
+        setError(err.message);
       });
-    } catch (err) {
-      setWeather(null);
-      setError(err.message);
-    }
   };
 
   const handleKeyDown = (e) => {
@@ -74,3 +73,4 @@ const App = () => {
 };
 
 export default App;
+
